@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Квартиры</title>
+</head>
+<body>
+
+<ul>
+{% for flat in flats %}
+<li>{{ flat }}, <a href="{{ flat.url }}" target="_blank">{{ flat.url }}</a></li>
+{% endfor %}
+</ul>
+</body>
+</html>

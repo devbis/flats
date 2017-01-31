@@ -1,0 +1,10 @@
+venv
+
+*.py[co]
+
+# PyCharm
+.idea
+
+.DS_Store
+
+*.sqlite3
