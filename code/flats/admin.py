@@ -3,6 +3,7 @@ import urllib.parse
 
 from django.contrib import admin
 from django.db.models import F
+from django.utils.html import format_html
 
 from .models import Flat
 
@@ -81,12 +82,13 @@ class FlatAdmin(admin.ModelAdmin):
         return locale.format("%d", obj.price_by_m, True)
 
     def link(self, obj: Flat):
-        return '<a href="{0}" target="_blank">{0}</a>'.format(obj.url)
-    link.allow_tags = True
+        return format_html('<a href="{0}" target="_blank">{0}</a>', obj.url)
 
     def map(self, obj: Flat):
-        return '<a href="https://www.google.ru/maps/place/{},+Санкт-Петербург' \
-               '" target="_blank"><img src="http://icons.iconarchive.com/' \
-               'icons/paomedia/small-n-flat/32/map-marker-icon.png" ' \
-               'alt="map"></a>'.format(urllib.parse.quote_plus(obj.address))
-    map.allow_tags = True
+        return format_html(
+            '<a href="https://www.google.ru/maps/place/{},+Санкт-Петербург'
+            '" target="_blank"><img src="http://icons.iconarchive.com/'
+            'icons/paomedia/small-n-flat/32/map-marker-icon.png" '
+            'alt="map"></a>',
+            urllib.parse.quote_plus(obj.address),
+        )
