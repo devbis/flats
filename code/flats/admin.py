@@ -1,7 +1,7 @@
-import locale
 import urllib.parse
 
 from django.contrib import admin
+from django.contrib.humanize.templatetags.humanize import intcomma
 from django.db.models import F
 from django.utils.html import format_html
 
@@ -73,13 +73,19 @@ class FloorFilter(admin.SimpleListFilter):
 @admin.register(Flat)
 class FlatAdmin(admin.ModelAdmin):
     list_display = [
-        'price', 'price_by_m', 'link', 'address', 'map', 'distance', 'floor',
-        'total_floors',
+        'price_print', 'price_by_m2', 'link', 'address', 'map', 'distance',
+        'floor', 'total_floors',
     ]
     list_filter = [FarListFilter, FloorFilter, 'rooms']
 
+    def price_print(self, obj: Flat):
+        return intcomma(obj.price)
+    price_print.admin_order_field = 'price'
+    price_print.short_description = 'Price'
+
     def price_by_m2(self, obj: Flat):
-        return locale.format("%d", obj.price_by_m, True)
+        return intcomma(obj.price_by_m)
+    price_by_m2.admin_order_field = 'price_by_m'
 
     def link(self, obj: Flat):
         return format_html('<a href="{0}" target="_blank">{0}</a>', obj.url)
