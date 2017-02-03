@@ -1,6 +1,7 @@
 import re
 import json
 
+from django.conf import settings
 from django.core.management import BaseCommand
 
 from bs4 import BeautifulSoup
@@ -12,12 +13,8 @@ from ...models import Flat
 class Command(BaseCommand):
     domain = 'https://www.avito.ru'
 
-    url = domain + \
-        '/sankt-peterburg/kvartiry/prodam?' \
-        'pmax={max_price}&s=1&' \
-        'metro=157-160-164-165-174-176-180-185-191-199-201-202-205-206-209-' \
-        '210-1015-1016-2132&' \
-        'f=59_13988b'
+    url = domain + '/sankt-peterburg/kvartiry/prodam?' \
+        'pmax={max_price}&s=1&metro={metro_stations}&f=59_13988b'
 
     def add_arguments(self, parser):
         parser.add_argument('--max-price', type=int, default=8000000)
@@ -91,7 +88,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        r = requests.get(self.url.format(max_price=options['max_price']))
+        r = requests.get(self.url.format(
+            max_price=options['max_price'],
+            metro_stations=settings.AVITO_METRO_STATIONS,
+        ))
 
         bs = BeautifulSoup(r.text, 'html.parser')  # 'html5lib'
         flats = self.parse_page(bs)

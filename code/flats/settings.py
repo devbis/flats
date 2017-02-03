@@ -24,8 +24,7 @@ SECRET_KEY = 'g0p=yu^1xp&k-r2d@1$lbb8=xexgcezbb24uek&_300%8n1%z4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -109,13 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
 LANGUAGE_CODE = 'ru-ru'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
@@ -123,3 +118,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# project specific values
+
+AVITO_METRO_STATIONS = '157-160-164-165-174-176-180-185-191-199-201-202-205-' \
+                       '206-209-210-1015-1016-2132'
+
+try:
+    from .settings_local import *  # noqa: F401, F403
+except ImportError:
+    pass
