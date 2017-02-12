@@ -125,6 +125,9 @@ STATIC_URL = '/static/'
 AVITO_METRO_STATIONS = '157-160-164-165-174-176-180-185-191-199-201-202-205-' \
                        '206-209-210-1015-1016-2132'
 
+EMLS_METRO_STATIONS = '52-101-2-11-13-34-32-47-94-46-12-33-35-10-30-31-95-54-' \
+                      '9-29-14-55'
+
 try:
     from .settings_local import *  # noqa: F401, F403
 except ImportError:
