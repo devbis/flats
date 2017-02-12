@@ -11,6 +11,7 @@ from ...models import Flat
 
 
 class Command(BaseCommand):
+    type = 'avito'
     domain = 'https://www.avito.ru'
 
     url = domain + '/sankt-peterburg/kvartiry/prodam?' \
@@ -81,7 +82,7 @@ class Command(BaseCommand):
                 url=url,
                 floor=floor,
                 total_floors=total_floors,
-                source_type='avito',
+                source_type=self.type,
                 source_id=source_id,
             ))
         return flats
@@ -107,7 +108,7 @@ class Command(BaseCommand):
                 next_page = None
             flats.extend(self.parse_page(bs))
 
-        Flat.objects.filter(source_type='avito').delete()
+        Flat.objects.filter(source_type=self.type).delete()
         Flat.objects.bulk_create(flats)
 
         self.stdout.write(str(len(flats)))
