@@ -23,7 +23,8 @@ class FarListFilter(admin.SimpleListFilter):
                 return queryset.filter(
                     distance__lte=self.limit,
                     total_floors__lte=self.floor_limit,
-                ).exclude(address__contains='поселок')
+                ).exclude(address__icontains='поселок').\
+                    exclude(address__icontains='п.г.т.')
         else:
             return queryset
 
@@ -73,10 +74,10 @@ class FloorFilter(admin.SimpleListFilter):
 @admin.register(Flat)
 class FlatAdmin(admin.ModelAdmin):
     list_display = [
-        'price_print', 'price_by_m2', 'link', 'address', 'map', 'distance',
-        'floor', 'total_floors',
+        'price_print', 'price_by_m2', 'square', 'link', 'address', 'map',
+        'distance', 'floor', 'total_floors', 'source_type',
     ]
-    list_filter = [FarListFilter, FloorFilter, 'rooms']
+    list_filter = [FarListFilter, FloorFilter, 'rooms', 'source_type']
 
     def price_print(self, obj: Flat):
         return intcomma(obj.price)
