@@ -74,10 +74,10 @@ class FloorFilter(admin.SimpleListFilter):
 @admin.register(Flat)
 class FlatAdmin(admin.ModelAdmin):
     list_display = [
-        'price_print', 'price_by_m2', 'square', 'link', 'address', 'map',
-        'distance', 'floor', 'total_floors', 'source_type',
+        'price_print', 'price_by_m2', 'square', 'link', 'address', 'metro',
+        'map', 'distance', 'floor', 'total_floors', 'source_type',
     ]
-    list_filter = [FarListFilter, FloorFilter, 'rooms', 'source_type']
+    list_filter = [FarListFilter, FloorFilter, 'rooms', 'source_type', 'metro']
 
     def price_print(self, obj: Flat):
         return intcomma(obj.price)

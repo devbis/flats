@@ -33,6 +33,8 @@ class Command(BaseCommand):
             url = self.domain + link
             address = row.select_one('.address-geo').text.strip()
 
+            metro = row.select_one('.metroline-2 .ellipsis').text.strip()
+
             title = row.select_one('.w-image > div:nth-of-type(2)').text.strip()
             square = float(row.select_one('.space-all').text)
             price = int(
@@ -75,6 +77,7 @@ class Command(BaseCommand):
             flats.append(Flat(
                 title=title,
                 address=address,
+                metro=metro,
                 distance=distance,
                 square=square,
                 rooms=rooms,

@@ -44,6 +44,7 @@ class Command(BaseCommand):
                 rooms = 0
 
             addr = list(row.select_one('.address').descendants)
+            metro = addr[2].strip('\n \t,').split(',')[0]
             address = addr[-1].strip('\n \t,')
             if not re.search('[А-Яа-я]', address):
                 # fake
@@ -74,6 +75,7 @@ class Command(BaseCommand):
             flats.append(Flat(
                 title=title,
                 address=address,
+                metro=metro,
                 distance=distance,
                 square=square,
                 rooms=rooms,

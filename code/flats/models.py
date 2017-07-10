@@ -9,6 +9,7 @@ class Flat(models.Model):
     price_by_m = models.IntegerField()
     url = models.URLField()
     address = models.TextField()
+    metro = models.TextField(default='')
     distance = models.IntegerField()
     floor = models.IntegerField()
     total_floors = models.IntegerField()
