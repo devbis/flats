@@ -52,6 +52,10 @@ class FloorFilter(admin.SimpleListFilter):
                 return queryset.filter(
                     floor__lt=F('total_floors')
                 )
+            elif self.value() == 'max':
+                return queryset.filter(
+                    floor=F('total_floors')
+                )
             else:
                 return queryset.filter(
                     floor__gte=2,
@@ -64,6 +68,7 @@ class FloorFilter(admin.SimpleListFilter):
         return (
             ('!1', '> 1'),
             ('!max', 'Not last'),
+            ('max', 'Last'),
             ('!1!max', 'Not last > 1'),
         )
 
