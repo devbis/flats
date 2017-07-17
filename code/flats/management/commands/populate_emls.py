@@ -70,8 +70,11 @@ class Command(BaseCommand):
 
             fl = row.select_one('.w-floor b').text
             print(title)
-            r = re.match(r'.*?(\d+)/(\d+) этаж$', fl)
-            floor = int(r.group(1))
+            r = re.match(r'.*?(\d+)?/(\d+) этаж$', fl)
+            try:
+                floor = int(r.group(1))
+            except TypeError:
+                floor = 0
             total_floors = int(r.group(2))
 
             flats.append(Flat(
