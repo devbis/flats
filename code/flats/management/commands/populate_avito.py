@@ -33,7 +33,7 @@ class Command(BaseCommand):
             title = link.string.strip()
             price = prices[0]['currencies']['RUB']
             price_by_m = prices[1]['currencies']['RUB']
-            square = price / price_by_m
+            square = price / (price_by_m or 1)
             url = self.domain + link['href']
 
             print(title)
