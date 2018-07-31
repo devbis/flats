@@ -13,10 +13,10 @@ class Command(BaseCommand):
     type = 'emls'
     domain = 'http://www.emls.ru'
 
-    url = domain + '/flats/?query=s/1/pmax/{max_price}/' \
+    url = domain + '/print/flats/?query=s/1/pmax/{max_price}/' \
                    'is_auction/2/place/address/reg/2/dept/2/metro/map/' \
                    'tr[]/{metro_stations}/' \
-                   'nearm/3/sort1/1/dir1/2/sort2/3/dir2/1/interval/3'
+                   'nearm/3/sort1/1/dir1/2/sort2/3/dir2/1/interval/3/print/2'
 
     def add_arguments(self, parser):
         parser.add_argument('--max-price', type=int, default=8000000)
@@ -26,7 +26,7 @@ class Command(BaseCommand):
 
         for _, row in enumerate(bs.select('.listing .row')):
             try:
-                link = row['data-href']
+                link = row['href']
             except KeyError:
                 continue
 
