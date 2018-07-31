@@ -13,7 +13,7 @@ class Command(BaseCommand):
     type = 'emls'
     domain = 'http://www.emls.ru'
 
-    url = domain + '/print/flats/?query=s/1/pmax/{max_price}/' \
+    url = domain + '/print/flats/?query=s/1/excl_dolya/1/pmax/{max_price}/' \
                    'is_auction/2/place/address/reg/2/dept/2/metro/map/' \
                    'tr[]/{metro_stations}/' \
                    'nearm/3/sort1/1/dir1/2/sort2/3/dir2/1/interval/3/print/2'
