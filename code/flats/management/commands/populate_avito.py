@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
             prices = json.loads(row.select_one('.popup-prices')['data-prices'])
 
-            title = link.string.strip()
+            title = link.select_one('span').string.strip()
             price = prices[0]['currencies']['RUB']
             price_by_m = prices[1]['currencies']['RUB']
             square = price / (price_by_m or 1)
@@ -43,26 +43,28 @@ class Command(BaseCommand):
             else:
                 rooms = 0
 
-            addr = list(row.select_one('.address').descendants)
+            addr_item = row.select_one('.address')
+            addr = list(addr_item.descendants)
             metro = addr[2].strip('\n \t,').split(',')[0]
             address = addr[-1].strip('\n \t,')
             if not re.search('[А-Яа-я]', address):
                 # fake
                 continue
 
-            if isinstance(addr[-2], str):
-                if addr[-2].endswith(' км'):
+            try:
+                distance_str = addr_item.select_one('.c-2').string
+            except AttributeError:
+                distance = 0
+            else:
+                if distance_str.endswith(' км'):
                     try:
                         distance = int(
-                            float(addr[-2].replace(' км', '')) * 1000
+                            float(distance_str.replace(' км', '')) * 1000
                         )
                     except ValueError:
                         distance = 500
                 else:
-                    distance = int(addr[-2].replace(' м', ''))
-            else:
-                print(addr)
-                distance = 0
+                    distance = int(distance_str.replace(' м', ''))
 
             r = re.match(r'.*?_(\d+)$', url)
             source_id = int(r.group(1))
