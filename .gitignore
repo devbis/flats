@@ -9,4 +9,6 @@ venv
 
 *.sqlite3
 
+code/static/plans
+code/temp/
 /code/flats/settings_local.py
