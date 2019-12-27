@@ -1,5 +1,4 @@
 import re
-import json
 
 from django.conf import settings
 from django.core.management import BaseCommand
@@ -15,7 +14,7 @@ class Command(BaseCommand):
     domain = 'https://www.avito.ru'
 
     url = domain + '/sankt-peterburg/kvartiry/prodam?' \
-        'pmax={max_price}&s=1&metro={metro_stations}&f=59_13988b'
+        'p={p}&pmax={max_price}&s=1&metro={metro_stations}&f=59_13988b'
 
     def add_arguments(self, parser):
         parser.add_argument('--max-price', type=int, default=8000000)
@@ -24,16 +23,23 @@ class Command(BaseCommand):
         flats = []
 
         for _, row in enumerate(bs.find_all(class_='js-catalog-item-enum')):
-            link = row.select_one('.item-description-title-link')
-            if not row.select_one('.popup-prices'):
+            link = row.select_one('.snippet-link')
+            if not row.select_one('[data-marker="item-price"]'):
                 continue
 
-            prices = json.loads(row.select_one('.popup-prices')['data-prices'])
+            price = int(re.sub(
+                r'[^\d]',
+                '',
+                row.select_one('[data-marker="item-price"]').text,
+            ))
 
-            title = link.select_one('span').string.strip()
-            price = prices[0]['currencies']['RUB']
-            price_by_m = prices[1]['currencies']['RUB']
-            square = price / (price_by_m or 1)
+            title = link.string.strip()
+            r = re.search(r'(?P<square>\d+) м²', title)
+            if r:
+                square = float(r.group('square'))
+            else:
+                continue
+            price_by_m = price / square
             url = self.domain + link['href']
 
             print(title)
@@ -44,27 +50,35 @@ class Command(BaseCommand):
                 rooms = 0
 
             addr_item = row.select_one('.address')
-            addr = list(addr_item.descendants)
-            metro = addr[2].strip('\n \t,').split(',')[0]
-            address = addr[-1].strip('\n \t,')
+            address = addr_item.select_one(
+                '.item-address__string',
+            ).text.strip('\n \t,')
+            metro = addr_item.select_one(
+                '.item-address-georeferences-item__content',
+            ).text
             if not re.search('[А-Яа-я]', address):
                 # fake
                 continue
 
             try:
-                distance_str = addr_item.select_one('.c-2').string
+                distance_str = addr_item.select_one(
+                    '.item-address-georeferences-item__after',
+                ).string
             except AttributeError:
                 distance = 0
             else:
                 if distance_str.endswith(' км'):
                     try:
                         distance = int(
-                            float(distance_str.replace(' км', '')) * 1000
+                            float(distance_str.replace(
+                                ' км',
+                                '',
+                            ).strip()) * 1000
                         )
                     except ValueError:
                         distance = 500
                 else:
-                    distance = int(distance_str.replace(' м', ''))
+                    distance = int(distance_str.replace(' м', '').strip())
 
             r = re.match(r'.*?_(\d+)$', url)
             source_id = int(r.group(1))
@@ -94,6 +108,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         r = requests.get(self.url.format(
+            p=1,
             max_price=options['max_price'],
             metro_stations=settings.AVITO_METRO_STATIONS,
         ))
@@ -101,15 +116,22 @@ class Command(BaseCommand):
         bs = BeautifulSoup(r.text, 'html.parser')  # 'html5lib'
         flats = self.parse_page(bs)
 
-        next_page = bs.select_one('a.js-pagination-next')['href']
+        pagination = bs.select_one('[data-marker="pagination-button"]')
+        spans = pagination.select('span')[1:-1]
+        if spans:
+            last_page = int(spans[-1].text)
+        else:
+            last_page = 1
+        print(last_page)
 
-        while next_page:
-            r = requests.get(self.domain + next_page)
+        for page in range(2, last_page):
+            next_page = self.url.format(
+                p=page,
+                max_price=options['max_price'],
+                metro_stations=settings.AVITO_METRO_STATIONS,
+            )
+            r = requests.get(next_page)
             bs = BeautifulSoup(r.text, 'html.parser')  # 'html5lib'
-            try:
-                next_page = bs.select_one('a.js-pagination-next')['href']
-            except TypeError:
-                next_page = None
             flats.extend(self.parse_page(bs))
 
         Flat.objects.filter(source_type=self.type).delete()
