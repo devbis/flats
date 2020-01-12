@@ -84,7 +84,8 @@ class FloorFilter(admin.SimpleListFilter):
 class FlatAdmin(admin.ModelAdmin):
     list_display = [
         'price_print', 'price_by_m2', 'square', 'link', 'address', 'metro',
-        'map', 'distance', 'floor', 'total_floors', 'source_type',
+        'map', 'distance', 'real_distance', 'floor', 'total_floors',
+        'source_type', 'debug_url',
     ]
     list_filter = [FarListFilter, FloorFilter, 'rooms', 'source_type', 'metro']
 
@@ -107,4 +108,10 @@ class FlatAdmin(admin.ModelAdmin):
             'icons/paomedia/small-n-flat/32/map-marker-icon.png" '
             'alt="map"></a>',
             urllib.parse.quote_plus(obj.address),
+        )
+
+    def plan(self, obj: Flat):
+        return format_html(
+            '<img src="/static/plans/{}.jpg" alt="">',
+            obj.id,
         )

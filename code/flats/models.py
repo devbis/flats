@@ -11,10 +11,12 @@ class Flat(models.Model):
     address = models.TextField()
     metro = models.TextField(default='')
     distance = models.IntegerField()
+    real_distance = models.IntegerField(null=True, blank=True)
     floor = models.IntegerField()
     total_floors = models.IntegerField()
     source_type = models.CharField(max_length=255)
     source_id = models.IntegerField()
+    debug_url = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.square}m, {self.rooms} rooms, {self.price//1000:d}"
