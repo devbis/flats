@@ -7,6 +7,10 @@ from django.utils.html import format_html
 
 from .models import Flat
 
+admin.site.site_header = "Flats Admin"
+admin.site.site_title = "Flats Admin Portal"
+admin.site.index_title = "Welcome to convenient flats search portal"
+
 
 class FarListFilter(admin.SimpleListFilter):
     limit = 3000
