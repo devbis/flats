@@ -19,7 +19,7 @@ class Command(BaseCommand):
                    'nearm/3/sort1/1/dir1/2/sort2/3/dir2/1/interval/3/print/2'
 
     def add_arguments(self, parser):
-        parser.add_argument('--max-price', type=int, default=8000000)
+        parser.add_argument('--max-price', type=int, default=9200000)
 
     def parse_page(self, bs):
         flats = []
@@ -31,7 +31,10 @@ class Command(BaseCommand):
                 continue
 
             url = self.domain + link
-            address = row.select_one('.address-geo').text.strip()
+            try:
+                address = row.select_one('.address-geo').text.strip()
+            except Exception:
+                continue
 
             metro = row.select_one('.metroline-2 .ellipsis').text.strip()
 
