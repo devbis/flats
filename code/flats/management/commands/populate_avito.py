@@ -17,7 +17,7 @@ class Command(BaseCommand):
         'p={p}&pmax={max_price}&s=1&metro={metro_stations}&f=59_13988b'
 
     def add_arguments(self, parser):
-        parser.add_argument('--max-price', type=int, default=8000000)
+        parser.add_argument('--max-price', type=int, default=9200000)
 
     def parse_page(self, bs):
         flats = []
@@ -50,6 +50,10 @@ class Command(BaseCommand):
                 rooms = 0
 
             addr_item = row.select_one('.address')
+            if not addr_item:
+                # ???
+                continue
+
             address = addr_item.select_one(
                 '.item-address__string',
             ).text.strip('\n \t,')
@@ -63,7 +67,7 @@ class Command(BaseCommand):
             try:
                 distance_str = addr_item.select_one(
                     '.item-address-georeferences-item__after',
-                ).string
+                ).string.replace('\xa0', ' ')
             except AttributeError:
                 distance = 0
             else:
